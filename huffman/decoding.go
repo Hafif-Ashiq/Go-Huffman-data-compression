@@ -167,7 +167,7 @@ func ExpandData(compressedString, codeString []byte, outputName string) error {
 	// Write data to file
 	err = os.WriteFile(outputName+".txt", []byte(fileData.String()), 0666)
 	if err != nil {
-		return errors.New("Error in decompressing the file ")
+		return errors.New("error in decompressing the file ")
 	}
 
 	return nil
