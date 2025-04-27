@@ -1,4 +1,4 @@
-package main
+package huffman
 
 import (
 	"encoding/json"
@@ -73,7 +73,7 @@ func generateCodes(node *Node, prefix string, codes map[rune]string) {
 
 }
 
-func saveCodesToFile(codes map[rune]string) error {
+func saveCodesToFile(codes map[rune]string, outputName string) error {
 	// Implement code saving here
 	json, err := json.Marshal(codes)
 
@@ -81,7 +81,7 @@ func saveCodesToFile(codes map[rune]string) error {
 		return err
 	}
 
-	err = os.WriteFile("codes.json", json, 0666)
+	err = os.WriteFile(outputName+"_codes.json", json, 0666)
 	if err != nil {
 		return err
 	}
@@ -89,7 +89,7 @@ func saveCodesToFile(codes map[rune]string) error {
 
 }
 
-func saveCompressedDataToFile(data string, codes map[rune]string) error {
+func saveCompressedDataToFile(data string, codes map[rune]string, output string) error {
 	// Implement compressed data saving here
 	var compressedData strings.Builder
 	for _, char := range data {
@@ -100,8 +100,9 @@ func saveCompressedDataToFile(data string, codes map[rune]string) error {
 	}
 
 	// convert into bytes
-
+	paddingBits := 0
 	for len(compressedData.String())%8 != 0 {
+		paddingBits++
 		compressedData.WriteString("0")
 	}
 
@@ -110,7 +111,8 @@ func saveCompressedDataToFile(data string, codes map[rune]string) error {
 	bitCount := 0
 
 	fmt.Println(len(compressedData.String()))
-
+	fmt.Println(paddingBits)
+	bytes = append(bytes, byte(paddingBits))
 	for _, char := range compressedData.String() {
 		currentByte <<= 1
 		if char == '1' {
@@ -128,14 +130,14 @@ func saveCompressedDataToFile(data string, codes map[rune]string) error {
 	// write to file
 
 	fmt.Println("Compressed data Created")
-	err := os.WriteFile("compressedData.huff", []byte(bytes), 0666)
+	err := os.WriteFile(output+".huff", []byte(bytes), 0666)
 	if err != nil {
 		return err
 	}
 	return err
 }
 
-func compressData(data string) error {
+func CompressData(data, outputName string) error {
 	// Implement Huffman coding here
 	// Generate Tree  Done
 	// Generate Codes
@@ -147,13 +149,13 @@ func compressData(data string) error {
 	codes := make(map[rune]string)
 	generateCodes(tree, "", codes)
 	fmt.Println("Codes generated")
-	err := saveCodesToFile(codes)
+	err := saveCodesToFile(codes, outputName)
 	fmt.Println("Codes saved")
 	if err != nil {
 		return err
 	}
 
-	err = saveCompressedDataToFile(data, codes)
+	err = saveCompressedDataToFile(data, codes, outputName)
 	fmt.Println("Compressed data saved")
 	if err != nil {
 		return err
