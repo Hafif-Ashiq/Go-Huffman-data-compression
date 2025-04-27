@@ -93,9 +93,7 @@ func saveCompressedDataToFile(data string, codes map[rune]string, output string)
 	// Implement compressed data saving here
 	var compressedData strings.Builder
 	for _, char := range data {
-		// if i%10000 == 0 {
-		// 	fmt.Printf("\rCharacters done %d/%d", i, len(data))
-		// }
+
 		compressedData.WriteString(codes[char])
 	}
 
@@ -110,8 +108,6 @@ func saveCompressedDataToFile(data string, codes map[rune]string, output string)
 	var currentByte byte
 	bitCount := 0
 
-	fmt.Println(len(compressedData.String()))
-	fmt.Println(paddingBits)
 	bytes = append(bytes, byte(paddingBits))
 	for _, char := range compressedData.String() {
 		currentByte <<= 1
@@ -128,8 +124,6 @@ func saveCompressedDataToFile(data string, codes map[rune]string, output string)
 	}
 
 	// write to file
-
-	fmt.Println("Compressed data Created")
 	err := os.WriteFile(output+".huff", []byte(bytes), 0666)
 	if err != nil {
 		return err
